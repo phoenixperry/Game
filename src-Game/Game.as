@@ -17,7 +17,7 @@
 
 	public class Game extends MovieClip {
 		//---   BEGIN class Game  ---
-		// learning git is so much fun
+		// learning git is so much fun. know this  - that should be ESC, then :wq
 		public var constraintXKid = 550;;
 		public var constraintXAdult = 750;
 		public var constraintXIncrement = 20;
