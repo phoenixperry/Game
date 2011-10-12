@@ -18,7 +18,7 @@
 	public class Game extends MovieClip {
 		//---   BEGIN class Game  ---
 		// learning git is so much fun. know this  - that should be ESC, then :wq!! OLD SCHOOL..
-		//hooooo
+		//I love the context sensitive menu.
 		// more comments -- oh yea
 		public var constraintXKid = 550;;
 		public var constraintXAdult = 750;
