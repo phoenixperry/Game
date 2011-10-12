@@ -1,4 +1,6 @@
-﻿package {
+package {
+
+//woooooooooooooo!
 
 	import fl.transitions.Tween;
 	import fl.transitions.easing.*;
