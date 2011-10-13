@@ -25,7 +25,9 @@
 		public var constraintXAdult = 750;
 		public var constraintXIncrement = 20;
 		public var constraintXNow = constraintXAdult;
-		public var debugString_txt:TextField;
+		public var debugString_txt:TextField, scoreString_txt:TextField;
+		public var scoreNum = 0;
+		public var scoreNumHi;
 		public var introScreen, introCounterMax;
 		public var levelMusic1, levelMusic2, levelMusic3, levelMusic4;
 		public var levelMusicChannel:SoundChannel;
@@ -191,25 +193,41 @@
 			levelNow=levelMin;
 			levelMax=5;
 			secondsMultiplier=60;//60 = 1 min.
-
+			
 			setup();
+		}
 
+		public function textSetup(){
 			// add some text
-			debugString_txt=new TextField  ;
+			debugString_txt=new TextField();
 			var format:TextFormat=new TextFormat("Arial",16,0xFFFFFF, 1);
 			debugString_txt.defaultTextFormat=format;
 			debugString_txt.width=800;
 			debugString_txt.height=150;
-			debugString_txt.x=200;
-			debugString_txt.y=200;
-
 			debugString_txt.background=false;
+			debugString_txt.text="PLAY! Your head is the balloon. Move right to left to control it." 
+			stage.addChild(debugString_txt);
+			debugString_txt.x=500;
+			debugString_txt.y=400;
+			
 
-
-
+			scoreString_txt=new TextField();
+			var scoreFormat:TextFormat=new TextFormat("Arial",16,0xFFFFFF, 1);
+			scoreString_txt.defaultTextFormat=scoreFormat;
+			scoreString_txt.width=100;
+			scoreString_txt.height=100;
+			scoreString_txt.background=false;
+			scoreString_txt.text=""; 
+			stage.addChild(scoreString_txt);
+			scoreString_txt.x=20;
+			scoreString_txt.y=20;
+			
 		}
-
+		
 		public function setup() {
+			
+			textSetup();
+			
 			introScreen=true;
 			introCounterMax = 10*60;
 			for (var j=0; j<balloon.length; j++) {
@@ -309,15 +327,10 @@
 		//---   DRAW   ---
 
 		public function doStuff(evt:Event) {
+			scoreString_txt.text=scoreNum; 
+
 			debugDraw();
 			if(introScreen) {
-			debugString_txt.text="PLAY! Your head is the balloon. Move right to left to control it." 
-			debugString_txt.x = stage.stageWidth/2-700; 
-			debugString_txt.y = stage.stageHeight/2-400;
-		
-			stage.addChild(debugString_txt);
-			debugString_txt.x=500;
-			debugString_txt.y=400;
 			introScreen=false;
 			}
 			if(masterCounter<introCounterMax){
@@ -569,6 +582,7 @@
 							objectArray[i].iAmDead=true;
 						}
 						if (objectArray[i].iAmDead) {
+							scoreNum += objectArray[i].pointVal;
 							stage.removeChild(objectArray[i]);
 							objectArray.splice(i,1);
 							objectCounter--;

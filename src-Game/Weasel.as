@@ -6,6 +6,7 @@
 
 		public function Weasel() {
 			super();
+			pointVal = 20;
 			speed = 5;
 			lifeSpan = 60 * 10;
 			bounceCounterMin = 3;

@@ -18,6 +18,7 @@ import flash.ui.*;
 		public var iAmDead,lifeCounter;
 		public var bounceFailSafeCount;
 		public var bounceFailSafeCountMax = 3;//removes enemies that get stuck
+		public var pointVal = 0;
 
 		public function Enemy() {
 			super(); 
