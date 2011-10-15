@@ -10,6 +10,7 @@
 	import flash.net.*;
 	import flash.ui.*;
 	import flash.media.*;
+	import XmlStuff;
 
 	import com.hurlant.*;
 
@@ -26,8 +27,7 @@
 		public var constraintXIncrement = 20;
 		public var constraintXNow = constraintXAdult;
 		public var debugString_txt:TextField, scoreString_txt:TextField;
-		public var scoreNum = 0;
-		public var scoreNumHi;
+		public var xmlStuff;
 		public var introScreen, introCounterMax;
 		public var levelMusic1, levelMusic2, levelMusic3, levelMusic4;
 		public var levelMusicChannel:SoundChannel;
@@ -36,9 +36,10 @@
 		public var beckonTargetX,beckonTargetY,beckonTargetZ;
 		public var debug,bossBattle,gameOver;
 		public var objectArray,newObject,objectsDropped,objectCounter;
+		public var bulletArray,newBullet,bulletsFired,bulletCounter;
 		public var levelMin,levelNow,levelMax;
 		public var masterCounter,secondsMultiplier,fps;
-		public var oddsOfFall,oddsOfKitty,oddsOfWeasel;
+		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller,oddsOfWerner,oddsOfElite;
 		public var jointArray,headFollower;
 
 		/***** MOUSE AND JOINTS  
@@ -78,6 +79,7 @@
 		public function Game() {
 			super();
 			Mouse.hide();
+			xmlStuff = new XmlStuff();
 			levelMusic1=new Level1();
 			levelMusic2=new Level2();
 			levelMusic3=new Level3();
@@ -181,7 +183,9 @@
 			jointArray = new Array();
 			headFollower = new MovieClip();
 			objectArray=[];
+			bulletArray=[];
 			objectCounter=0;
+			bulletCounter=0;
 			debug=false;
 			if (debug) {
 				cursor.visible=true;
@@ -225,7 +229,6 @@
 		}
 		
 		public function setup() {
-			
 			textSetup();
 			
 			introScreen=true;
@@ -244,9 +247,19 @@
 					}
 				}
 			}
+			if (bulletsFired) {
+				for (var a=0; a<bulletArray.length; a++) {
+					if (stage.contains(bulletArray[a])) {
+						stage.removeChild(bulletArray[a]);
+					}
+				}
+			}
 			objectsDropped=false;
+			bulletsFired=false;
 			objectCounter=0;
+			bulletCounter=0;
 			objectArray.length=0;
+			bulletArray.length=0;
 		}
 
 		//---   BECKON   ---
@@ -327,7 +340,12 @@
 		//---   DRAW   ---
 
 		public function doStuff(evt:Event) {
-			scoreString_txt.text=scoreNum; 
+			/*
+			var qqq = Math.random();
+			if(qqq<0.03){
+				fireBullets();
+			}*/
+			scoreString_txt.text=xmlStuff.scoreNum; 
 
 			debugDraw();
 			if(introScreen) {
@@ -346,9 +364,11 @@
 			if (! bossBattle) {
 				updateMaster();
 				objectsMove();
+				bulletsMove();
 				for (var i=0; i<balloon.length; i++) {
 					balloonMove(balloon[i]);
 					objectsDie(balloon[i]);
+					bulletsDie(balloon[i]);
 					balloonDie(balloon[i]);
 				}
 			} else {
@@ -434,22 +454,37 @@
 				oddsOfFall=0.992;
 				oddsOfKitty=0.9;
 				oddsOfWeasel=0.5;
+				oddsOfFaller=0.4;
+				oddsOfWerner=0.3;
+				oddsOfElite=0.3;
 			} else if (levelNow==2) {
 				oddsOfFall=0.9915;
 				oddsOfKitty=0.991;
 				oddsOfWeasel=0.8;
+				oddsOfFaller=0.6;
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			} else if (levelNow==3) {
 				oddsOfFall=0.991;
 				oddsOfKitty=0.3;
 				oddsOfWeasel=1.0;
+				oddsOfFaller=1.0;	
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			} else if (levelNow==4) {
 				oddsOfFall=0.99;
 				oddsOfKitty=0.7;
 				oddsOfWeasel=0.3;
+				oddsOfFaller=0.5;	
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			} else if (levelNow==5) {
 				oddsOfFall=1.0;
 				oddsOfKitty=0.6;
 				oddsOfWeasel=1.0;
+				oddsOfFaller=0.5;
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			}
 		}
 
@@ -536,7 +571,19 @@
 			var rnd=Math.random();
 			if (rnd < oddsOfKitty) {
 				if (rnd < oddsOfWeasel) {
-					newObject = new Weasel();
+					if(rnd < oddsOfFaller){
+						if(rnd < oddsOfWerner){
+							if(rnd < oddsOfElite){
+								newObject = new Elite();
+							}else{
+							newObject = new Werner();
+							}
+						}else{
+						newObject = new Faller();
+					}
+					}else{
+						newObject = new Weasel();
+					}
 				} else {
 					newObject = new Kitty();
 				}
@@ -544,6 +591,33 @@
 			objectArray[objectCounter]=newObject;
 			stage.addChild(objectArray[objectCounter]);
 			objectCounter++;
+		}
+		
+		public function fireBullets(xx,yy) {
+			bulletsFired=true;
+			/*
+			var rnd=Math.random();
+			if (rnd < oddsOfKitty) {
+				if (rnd < oddsOfWeasel) {
+					if(rnd < oddsOfFaller){
+						if(rnd < oddsOfWerner){
+							newObject = new Werner();
+						}else{
+						newObject = new Faller();
+					}
+					}else{
+						newObject = new Weasel();
+					}
+				} else {
+					newObject = new Kitty();
+				}
+			}*/
+			newBullet = new Rocket();
+			bulletArray[bulletCounter]=newBullet;
+			stage.addChild(bulletArray[bulletCounter]);
+			bulletArray[bulletCounter].x=xx;
+			bulletArray[bulletCounter].y=yy;
+			bulletCounter++;
 		}
 
 		//---
@@ -553,13 +627,34 @@
 				for (var i=0; i<objectArray.length; i++) {
 					if (stage.contains(objectArray[i])) {
 						objectArray[i].moveHandler();
+						if(!objectArray[i].fixedTarget){
 						objectArray[i].targetX=balloon[0].x;//right now always chases first balloon
 						objectArray[i].targetY=balloon[0].y;
+						}
+						if(objectArray[i].rocketFired){
+							objectArray[i].rocketFired=false;
+							fireBullets(objectArray[i].x,objectArray[i].y);
+							objectArray[i].runAway=true;
+						}
 					}
 				}
 			}
 		}
 
+		public function bulletsMove() {
+			if (bulletsFired) {
+				for (var i=0; i<bulletArray.length; i++) {
+					if (stage.contains(bulletArray[i])) {
+						bulletArray[i].moveHandler();
+						if(!bulletArray[i].fixedTarget){
+						bulletArray[i].targetX=balloon[0].x;//right now always chases first balloon
+						bulletArray[i].targetY=balloon[0].y;
+						}
+					}
+				}
+			}
+		}
+		
 		public function objectsDie(theTarget) {
 			if (objectsDropped) {
 				for (var i=0; i<objectArray.length; i++) {
@@ -582,7 +677,7 @@
 							objectArray[i].iAmDead=true;
 						}
 						if (objectArray[i].iAmDead) {
-							scoreNum += objectArray[i].pointVal;
+							xmlStuff.scoreNum += objectArray[i].pointVal;
 							stage.removeChild(objectArray[i]);
 							objectArray.splice(i,1);
 							objectCounter--;
@@ -591,8 +686,45 @@
 				}
 			}
 		}
-		//--
+
+		public function bulletsDie(theTarget) {
+			if (bulletsFired) {
+				for (var i=0; i<bulletArray.length; i++) {
+					if (stage.contains(bulletArray[i])) {
+						if (! theTarget.deadBalloon&&hitDetect(theTarget.x,theTarget.y,theTarget.width-100,theTarget.height-100,bulletArray[i].x,bulletArray[i].y,bulletArray[i].width,bulletArray[i].height)) {
+								theTarget.hitBalloon=true;
+								bulletArray[i].lifeCounter=9999;
+								doBoom(bulletArray[i].x,bulletArray[i].y);
+
+						}
+						if (bulletArray[i].x<-100||bulletArray[i].y<-100||bulletArray[i].x>stage.stageWidth+100||bulletArray[i].y>stage.stageHeight+100) {
+							bulletArray[i].iAmDead=true;
+						}
+						if (bulletArray[i].lifeCounter>bulletArray[i].lifeSpan) {
+							if (bulletArray[i].x>0&&bulletArray[i].x<stage.stageWidth&&bulletArray[i].y>0) {
+								doBoom(bulletArray[i].x,bulletArray[i].y);
+							}
+							bulletArray[i].iAmDead=true;
+						}
+						if (bulletArray[i].iAmDead) {
+							stage.removeChild(bulletArray[i]);
+							bulletArray.splice(i,1);
+							bulletCounter--;
+						}
+					}
+				}
+			}
+		}
+	//--
 		public function doPoof(xx,yy) {
+
+			var poof = new Poof();
+			stage.addChild(poof);
+			poof.x=xx;
+			poof.y=yy;
+		}
+		
+		public function doBoom(xx,yy) {
 
 			var poof = new Poof();
 			stage.addChild(poof);
