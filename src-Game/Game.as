@@ -10,6 +10,7 @@
 	import flash.net.*;
 	import flash.ui.*;
 	import flash.media.*;
+	import XmlStuff;
 
 	import com.hurlant.*;
 
@@ -38,7 +39,7 @@
 		public var bulletArray,newBullet,bulletsFired,bulletCounter;
 		public var levelMin,levelNow,levelMax;
 		public var masterCounter,secondsMultiplier,fps;
-		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller,oddsOfWerner;
+		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller,oddsOfWerner,oddsOfElite;
 		public var jointArray,headFollower;
 
 		/***** MOUSE AND JOINTS  
@@ -455,30 +456,35 @@
 				oddsOfWeasel=0.5;
 				oddsOfFaller=0.4;
 				oddsOfWerner=0.3;
+				oddsOfElite=0.3;
 			} else if (levelNow==2) {
 				oddsOfFall=0.9915;
 				oddsOfKitty=0.991;
 				oddsOfWeasel=0.8;
 				oddsOfFaller=0.6;
-				oddsOfWerner=0.4;
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			} else if (levelNow==3) {
 				oddsOfFall=0.991;
 				oddsOfKitty=0.3;
 				oddsOfWeasel=1.0;
 				oddsOfFaller=1.0;	
-				oddsOfWerner=0.4;
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			} else if (levelNow==4) {
 				oddsOfFall=0.99;
 				oddsOfKitty=0.7;
 				oddsOfWeasel=0.3;
 				oddsOfFaller=0.5;	
-				oddsOfWerner=0.4;
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			} else if (levelNow==5) {
 				oddsOfFall=1.0;
 				oddsOfKitty=0.6;
 				oddsOfWeasel=1.0;
 				oddsOfFaller=0.5;
-				oddsOfWerner=0.4;
+				oddsOfWerner=0.3;
+				oddsOfElite=0.1;
 			}
 		}
 
@@ -567,7 +573,11 @@
 				if (rnd < oddsOfWeasel) {
 					if(rnd < oddsOfFaller){
 						if(rnd < oddsOfWerner){
+							if(rnd < oddsOfElite){
+								newObject = new Elite();
+							}else{
 							newObject = new Werner();
+							}
 						}else{
 						newObject = new Faller();
 					}
