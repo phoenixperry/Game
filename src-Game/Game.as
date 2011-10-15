@@ -10,6 +10,7 @@
 	import flash.net.*;
 	import flash.ui.*;
 	import flash.media.*;
+	
 	import XmlStuff;
 
 	import com.hurlant.*;
@@ -79,11 +80,11 @@
 		public function Game() {
 			super();
 			Mouse.hide();
-			xmlStuff = new XmlStuff();
-			levelMusic1=new Level1();
-			levelMusic2=new Level2();
-			levelMusic3=new Level3();
-			levelMusic4=new Level4();
+			var xmlStuff = new XmlStuff();
+			var levelMusic1=new Level1();
+			var levelMusic2=new Level2();
+			var levelMusic3=new Level3();
+			var levelMusic4=new Level4();
 			levelMusicChannel = levelMusic3.play(0,int.MAX_VALUE);
 
 			stage.addEventListener("enterFrame",doStuff);
@@ -345,7 +346,7 @@
 			if(qqq<0.03){
 				fireBullets();
 			}*/
-			scoreString_txt.text=xmlStuff.scoreNum; 
+			//scoreString_txt.text=xmlStuff.scoreNum; 
 
 			debugDraw();
 			if(introScreen) {
@@ -677,7 +678,7 @@
 							objectArray[i].iAmDead=true;
 						}
 						if (objectArray[i].iAmDead) {
-							xmlStuff.scoreNum += objectArray[i].pointVal;
+							//xmlStuff.scoreNum += objectArray[i].pointVal;
 							stage.removeChild(objectArray[i]);
 							objectArray.splice(i,1);
 							objectCounter--;
