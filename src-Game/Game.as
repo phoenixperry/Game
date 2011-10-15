@@ -35,6 +35,7 @@
 		public var beckonTargetX,beckonTargetY,beckonTargetZ;
 		public var debug,bossBattle,gameOver;
 		public var objectArray,newObject,objectsDropped,objectCounter;
+		public var bulletArray,newBullet,bulletsFired,bulletCounter;
 		public var levelMin,levelNow,levelMax;
 		public var masterCounter,secondsMultiplier,fps;
 		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller,oddsOfWerner;
@@ -181,7 +182,9 @@
 			jointArray = new Array();
 			headFollower = new MovieClip();
 			objectArray=[];
+			bulletArray=[];
 			objectCounter=0;
+			bulletCounter=0;
 			debug=false;
 			if (debug) {
 				cursor.visible=true;
@@ -243,9 +246,19 @@
 					}
 				}
 			}
+			if (bulletsFired) {
+				for (var a=0; a<bulletArray.length; a++) {
+					if (stage.contains(bulletArray[a])) {
+						stage.removeChild(bulletArray[a]);
+					}
+				}
+			}
 			objectsDropped=false;
+			bulletsFired=false;
 			objectCounter=0;
+			bulletCounter=0;
 			objectArray.length=0;
+			bulletArray.length=0;
 		}
 
 		//---   BECKON   ---
@@ -326,6 +339,11 @@
 		//---   DRAW   ---
 
 		public function doStuff(evt:Event) {
+			/*
+			var qqq = Math.random();
+			if(qqq<0.03){
+				fireBullets();
+			}*/
 			scoreString_txt.text=xmlStuff.scoreNum; 
 
 			debugDraw();
@@ -345,9 +363,11 @@
 			if (! bossBattle) {
 				updateMaster();
 				objectsMove();
+				bulletsMove();
 				for (var i=0; i<balloon.length; i++) {
 					balloonMove(balloon[i]);
 					objectsDie(balloon[i]);
+					bulletsDie(balloon[i]);
 					balloonDie(balloon[i]);
 				}
 			} else {
@@ -562,6 +582,33 @@
 			stage.addChild(objectArray[objectCounter]);
 			objectCounter++;
 		}
+		
+		public function fireBullets(xx,yy) {
+			bulletsFired=true;
+			/*
+			var rnd=Math.random();
+			if (rnd < oddsOfKitty) {
+				if (rnd < oddsOfWeasel) {
+					if(rnd < oddsOfFaller){
+						if(rnd < oddsOfWerner){
+							newObject = new Werner();
+						}else{
+						newObject = new Faller();
+					}
+					}else{
+						newObject = new Weasel();
+					}
+				} else {
+					newObject = new Kitty();
+				}
+			}*/
+			newBullet = new Rocket();
+			bulletArray[bulletCounter]=newBullet;
+			stage.addChild(bulletArray[bulletCounter]);
+			bulletArray[bulletCounter].x=xx;
+			bulletArray[bulletCounter].y=yy;
+			bulletCounter++;
+		}
 
 		//---
 
@@ -574,11 +621,30 @@
 						objectArray[i].targetX=balloon[0].x;//right now always chases first balloon
 						objectArray[i].targetY=balloon[0].y;
 						}
+						if(objectArray[i].rocketFired){
+							objectArray[i].rocketFired=false;
+							fireBullets(objectArray[i].x,objectArray[i].y);
+							objectArray[i].runAway=true;
+						}
 					}
 				}
 			}
 		}
 
+		public function bulletsMove() {
+			if (bulletsFired) {
+				for (var i=0; i<bulletArray.length; i++) {
+					if (stage.contains(bulletArray[i])) {
+						bulletArray[i].moveHandler();
+						if(!bulletArray[i].fixedTarget){
+						bulletArray[i].targetX=balloon[0].x;//right now always chases first balloon
+						bulletArray[i].targetY=balloon[0].y;
+						}
+					}
+				}
+			}
+		}
+		
 		public function objectsDie(theTarget) {
 			if (objectsDropped) {
 				for (var i=0; i<objectArray.length; i++) {
@@ -610,8 +676,45 @@
 				}
 			}
 		}
-		//--
+
+		public function bulletsDie(theTarget) {
+			if (bulletsFired) {
+				for (var i=0; i<bulletArray.length; i++) {
+					if (stage.contains(bulletArray[i])) {
+						if (! theTarget.deadBalloon&&hitDetect(theTarget.x,theTarget.y,theTarget.width-100,theTarget.height-100,bulletArray[i].x,bulletArray[i].y,bulletArray[i].width,bulletArray[i].height)) {
+								theTarget.hitBalloon=true;
+								bulletArray[i].lifeCounter=9999;
+								doBoom(bulletArray[i].x,bulletArray[i].y);
+
+						}
+						if (bulletArray[i].x<-100||bulletArray[i].y<-100||bulletArray[i].x>stage.stageWidth+100||bulletArray[i].y>stage.stageHeight+100) {
+							bulletArray[i].iAmDead=true;
+						}
+						if (bulletArray[i].lifeCounter>bulletArray[i].lifeSpan) {
+							if (bulletArray[i].x>0&&bulletArray[i].x<stage.stageWidth&&bulletArray[i].y>0) {
+								doBoom(bulletArray[i].x,bulletArray[i].y);
+							}
+							bulletArray[i].iAmDead=true;
+						}
+						if (bulletArray[i].iAmDead) {
+							stage.removeChild(bulletArray[i]);
+							bulletArray.splice(i,1);
+							bulletCounter--;
+						}
+					}
+				}
+			}
+		}
+	//--
 		public function doPoof(xx,yy) {
+
+			var poof = new Poof();
+			stage.addChild(poof);
+			poof.x=xx;
+			poof.y=yy;
+		}
+		
+		public function doBoom(xx,yy) {
 
 			var poof = new Poof();
 			stage.addChild(poof);
