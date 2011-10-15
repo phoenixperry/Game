@@ -1,5 +1,5 @@
 package {
-
+	
 	import fl.transitions.Tween;
 	import fl.transitions.easing.*;
 	import flash.display.*;
@@ -10,13 +10,12 @@ package {
 	import flash.net.*;
 	import flash.ui.*;
 	import flash.media.*;
-	
 	import XmlStuff;
-
+	
 	import com.hurlant.*;
-
+	
 	import com.omek.*;
-
+	
 	public class Game extends MovieClip {
 		//---   BEGIN class Game  ---
 		// learning git is so much fun. know this  - that should be ESC, then :wq!! OLD SCHOOL..
@@ -42,120 +41,120 @@ package {
 		public var masterCounter,secondsMultiplier,fps;
 		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller,oddsOfWerner,oddsOfElite;
 		public var jointArray,headFollower;
-
+		
 		/***** MOUSE AND JOINTS  
-		  * scaling for the mouse. convert between the sensor width and height (160x120) to the screen width and height (1024x768)  */
+		 * scaling for the mouse. convert between the sensor width and height (160x120) to the screen width and height (1024x768)  */
 		public const _screenScaleX:uint=11;
 		public const _screenScaleY:uint=10;
-
+		
 		/***** Screen / Kinect correction 
-		  * x,y correction for the mouses. set them by your camera. these work for Primesense and Panasonic */
+		 * x,y correction for the mouses. set them by your camera. these work for Primesense and Panasonic */
 		public const _correctionX:int =-100;
 		public const _correctionY:int = 700;
-
+		
 		/* ssplayerLabel : index of the current skeleton
-		  * jointX,y,z : x,y,z value of the joint between 0 to the sensor width. */
-
+		* jointX,y,z : x,y,z value of the joint between 0 to the sensor width. */
+		
 		///parallax vars
 		public var blackg:Blackg;
 		public var blackg2:Blackg;
-
+		
 		public var tri:Tri;
 		public var tri2:Tri;
-
+		
 		public var colorbg:Colorbg;
 		public var colorbg2:Colorbg;
-
+		
 		public var whiteg:Whiteg;
 		public var whiteg2:Whiteg;
-
+		
 		public var blackgC:MovieClip;
 		public var triC:MovieClip;
 		public var colorbgC:MovieClip;
 		public var whitegC:MovieClip;
-
+		
 		public var myBreadth:Number;
 		public var mover:Number;
-
+		
 		public function Game() {
 			super();
 			Mouse.hide();
-			var xmlStuff = new XmlStuff();
-			var levelMusic1=new Level1();
-			var levelMusic2=new Level2();
-			var levelMusic3=new Level3();
-			var levelMusic4=new Level4();
+			xmlStuff = new XmlStuff();
+			levelMusic1=new Level1();
+			levelMusic2=new Level2();
+			levelMusic3=new Level3();
+			levelMusic4=new Level4();
 			levelMusicChannel = levelMusic3.play(0,int.MAX_VALUE);
-
+			
 			stage.addEventListener("enterFrame",doStuff);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN,keyDownHandler);
 			stage.addEventListener("mouseDown",mouseDownHandler);
-
-
+			
+			
 			//Omek mandatory API - every application with OmekFlashWrapper MUST have these callbacks
 			ExternalInterface.addCallback("OmekGesture", onOmekGesture);
 			ExternalInterface.addCallback("OmekJointPosition", onOmekJointPosition);
 			ExternalInterface.addCallback("OmekAlert", onOmekAlert);
 			ExternalInterface.addCallback("OmekGetMaxPlayers", onOmekGetMaxPlayers);
-
+			
 			//Extra Omek API - use these callbacks to get answers on sensor queries ;
 			//ExternalInterface.addCallback("OmekIsSensorConnected", onOmekIsSensorConnected);
 			//wait for connecting to the sensor before querying it.
 			addEventListener(Event.ENTER_FRAME,checkIfSensorReady);
-
+			
 			if (debug) {
 				headFollower.graphics.beginFill(0);
 				headFollower.graphics.drawCircle(20,20,30);
 				addChild(headFollower);
 			}
-
+			
 			/// add parallax to stage//parallax 
 			blackg=new Blackg  ;
 			tri=new Tri  ;
 			colorbg=new Colorbg  ;
 			whiteg=new Whiteg  ;
-
+			
 			blackgC = new MovieClip();
 			triC = new MovieClip();
 			colorbgC = new MovieClip();
 			whitegC = new MovieClip();
-
+			
 			blackg2=new Blackg  ;
 			tri2=new Tri  ;
 			colorbg2=new Colorbg  ;
 			whiteg2=new Whiteg  ;
-
+			
 			blackg.x=0;
 			blackg.y=0;
 			blackg2.x=2047;
 			blackg2.y=0;
-
+			
 			tri.x=0;
 			tri.y=0;
 			tri2.x=2048;
 			tri2.y=0;
-
+			
 			colorbg.x=0;
 			colorbg.y=0;
 			colorbg2.x=2048;
 			colorbg2.y=0;
-
+			
 			whiteg.x=0;
 			whiteg.y=0;
 			whiteg2.x=2048;
 			whiteg2.y=0;
-
-
+			
+			
 			colorbgC.addChild(colorbg);
 			blackgC.addChild(blackg);
 			whitegC.addChild(whiteg);
 			triC.addChild(tri);
-
+			
 			colorbgC.addChild(colorbg2);
 			whitegC.addChild(whiteg2);
 			blackgC.addChild(blackg2);
 			triC.addChild(tri2);
-
+			
 			stage.addChild(colorbgC);
 			stage.addChild(whitegC);
 			stage.addChild(blackgC);
@@ -163,7 +162,7 @@ package {
 			myBreadth=2048;
 			mover=1;
 			addEventListener(Event.ENTER_FRAME, startUp);
-
+			
 			numBalloons=1;
 			balloon=[];
 			for (var j=0; j<numBalloons; j++) {
@@ -201,7 +200,7 @@ package {
 			
 			setup();
 		}
-
+		
 		public function textSetup(){
 			// add some text
 			debugString_txt=new TextField();
@@ -215,7 +214,7 @@ package {
 			debugString_txt.x=500;
 			debugString_txt.y=400;
 			
-
+			
 			scoreString_txt=new TextField();
 			var scoreFormat:TextFormat=new TextFormat("Arial",16,0xFFFFFF, 1);
 			scoreString_txt.defaultTextFormat=scoreFormat;
@@ -262,38 +261,38 @@ package {
 			objectArray.length=0;
 			bulletArray.length=0;
 		}
-
+		
 		//---   BECKON   ---
-
+		
 		public function checkIfSensorReady(e:Event):void {
 			ExternalInterface.call("OmekIsSensorConnected","");
 		}
-
+		
 		public function onOmekIsSensorConnected(connected:String):void {
 			if ( connected=="true" ) {
 				removeEventListener(Event.ENTER_FRAME,checkIfSensorReady);
 				sendQueriesToSensor();
 			}
 		}
-
+		
 		public function sendQueriesToSensor():void {//set the number of players the sensor tracks
 			//set the number of players the sensor tracks
 			ExternalInterface.call("OmekSetMaxPlayers","1");
-
+			
 			//ask for the tracked number of players. return a value to ExternalInterface.addCallback("OmekGetMaxPlayers", onOmekGetMaxPlayers);
-
-
+			
+			
 			//set the sensor's tracking mode to either: "all", "basic", "upper", or "sitting";
 			ExternalInterface.call("OmekSetTrackingMode","all");
 			//adding+removing listeners for the sensor to specific gestures (see documentation for full list of gestures available);
 			ExternalInterface.call("OmekAddGesture","leftPush");
 			ExternalInterface.call("OmekAddGesture","rightClick");
-
+			
 		}
-
+		
 		//ExternalInterface.call("OmekRemoveGesture","leftPush");
-
-
+		
+		
 		//ALL GESTURE DECTTION HERE connected : boolean (as a string) "true" or "false", marking if the sensor is ready
 		public function onOmekGesture(gestureName:String, playerLabel:String):void {
 			if (gestureName == "leftPush" || "rightClick") {
@@ -302,27 +301,27 @@ package {
 				debugString_txt.x=500;
 				debugString_txt.y=500;
 				setup();
-
+				
 			}
 		}
-
+		
 		public function onOmekAlert(alertName:String, playerLabel:String):void {
 		}
-
-
+		
+		
 		public function onOmekJointPosition(jointName:String, playerLabel:String, jointX:String, jointY:String, jointZ:String, confidence:String):void {
 			//give control on mouses to one specific player.
-
-
+			
+			
 			if (playerLabel == "0") {
-
-
+				
+				
 			}
-
+			
 			if (playerLabel == "1" ) {
-
+				
 			}
-
+			
 			if (jointName == "leftFingerTip") {
 			}
 			if (jointName == "rightFingerTip") {
@@ -337,30 +336,30 @@ package {
 				}
 			}
 		}
-
+		
 		//---   DRAW   ---
-
+		
 		public function doStuff(evt:Event) {
 			/*
 			var qqq = Math.random();
 			if(qqq<0.03){
-				fireBullets();
+			fireBullets();
 			}*/
-			//scoreString_txt.text=xmlStuff.scoreNum; 
-
+			scoreString_txt.text=xmlStuff.scoreNum; 
+			
 			debugDraw();
 			if(introScreen) {
-			introScreen=false;
+				introScreen=false;
 			}
 			if(masterCounter<introCounterMax){
 				debugString_txt.alpha = 1.0; 
 			}else{
 				if(debugString_txt.alpha>0.0){
-				   debugString_txt.alpha-=0.1;
-				   if(debugString_txt.alpha<0.0){
-					   debugString_txt.alpha = 0.0;
-				   }
-				   }
+					debugString_txt.alpha-=0.1;
+					if(debugString_txt.alpha<0.0){
+						debugString_txt.alpha = 0.0;
+					}
+				}
 			}
 			if (! bossBattle) {
 				updateMaster();
@@ -380,7 +379,7 @@ package {
 				*/
 			}
 		}
-
+		
 		//---   CONTROLS   ---
 		public function keyDownHandler(event) {
 			//if (objectsDropped && event.keyCode.toString() == 32) {
@@ -397,16 +396,16 @@ package {
 				}
 			}
 			if (event.keyCode.toString()==49) {//1
-			levelMusicHandler(levelMusic1);
+				levelMusicHandler(levelMusic1);
 			}
 			if (event.keyCode.toString()==50) {//2
-			levelMusicHandler(levelMusic2);
+				levelMusicHandler(levelMusic2);
 			}
 			if (event.keyCode.toString()==51) {//3
-			levelMusicHandler(levelMusic3);
+				levelMusicHandler(levelMusic3);
 			}
 			if (event.keyCode.toString()==52) {//4
-			levelMusicHandler(levelMusic4);
+				levelMusicHandler(levelMusic4);
 			}
 			if (event.keyCode.toString()==65) {//a
 				constraintXNow = constraintXAdult;
@@ -424,15 +423,15 @@ package {
 				constraintXNow -= constraintXIncrement;
 				setConstraints(constraintXNow);
 			}
-						
+			
 		}
-
+		
 		//---
-
+		
 		public function mouseDownHandler(event) {
 			dropObjects();
 		}
-
+		
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~     general level stuff    ~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 		public function levelSettings() {
 			if (masterCounter == 0) {
@@ -488,7 +487,7 @@ package {
 				oddsOfElite=0.1;
 			}
 		}
-
+		
 		//---
 		
 		public function levelMusicHandler(ls){
@@ -503,7 +502,7 @@ package {
 		}
 		
 		//---
-
+		
 		public function updateMaster() {
 			levelSettings();
 			var rnd=Math.random();
@@ -512,9 +511,9 @@ package {
 			}
 			masterCounter++;
 		}
-
+		
 		//---
-
+		
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~     manage players    ~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 		public function balloonMove(theTarget) {
 			if (! theTarget.hitBalloon) {
@@ -537,9 +536,9 @@ package {
 				theTarget.tweenY.start();
 			}
 		}
-
+		
 		//---;
-
+		
 		public function balloonDie(theTarget) {
 			if (theTarget.damageClock) {
 				if (theTarget.damageTimer<theTarget.damageTimerMax) {
@@ -565,7 +564,7 @@ package {
 				}
 			}
 		}
-
+		
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~     manage enemies    ~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 		public function dropObjects() {
 			objectsDropped=true;
@@ -577,11 +576,11 @@ package {
 							if(rnd < oddsOfElite){
 								newObject = new Elite();
 							}else{
-							newObject = new Werner();
+								newObject = new Werner();
 							}
 						}else{
-						newObject = new Faller();
-					}
+							newObject = new Faller();
+						}
 					}else{
 						newObject = new Weasel();
 					}
@@ -599,19 +598,19 @@ package {
 			/*
 			var rnd=Math.random();
 			if (rnd < oddsOfKitty) {
-				if (rnd < oddsOfWeasel) {
-					if(rnd < oddsOfFaller){
-						if(rnd < oddsOfWerner){
-							newObject = new Werner();
-						}else{
-						newObject = new Faller();
-					}
-					}else{
-						newObject = new Weasel();
-					}
-				} else {
-					newObject = new Kitty();
-				}
+			if (rnd < oddsOfWeasel) {
+			if(rnd < oddsOfFaller){
+			if(rnd < oddsOfWerner){
+			newObject = new Werner();
+			}else{
+			newObject = new Faller();
+			}
+			}else{
+			newObject = new Weasel();
+			}
+			} else {
+			newObject = new Kitty();
+			}
 			}*/
 			newBullet = new Rocket();
 			bulletArray[bulletCounter]=newBullet;
@@ -620,17 +619,17 @@ package {
 			bulletArray[bulletCounter].y=yy;
 			bulletCounter++;
 		}
-
+		
 		//---
-
+		
 		public function objectsMove() {
 			if (objectsDropped) {
 				for (var i=0; i<objectArray.length; i++) {
 					if (stage.contains(objectArray[i])) {
 						objectArray[i].moveHandler();
 						if(!objectArray[i].fixedTarget){
-						objectArray[i].targetX=balloon[0].x;//right now always chases first balloon
-						objectArray[i].targetY=balloon[0].y;
+							objectArray[i].targetX=balloon[0].x;//right now always chases first balloon
+							objectArray[i].targetY=balloon[0].y;
 						}
 						if(objectArray[i].rocketFired){
 							objectArray[i].rocketFired=false;
@@ -641,15 +640,15 @@ package {
 				}
 			}
 		}
-
+		
 		public function bulletsMove() {
 			if (bulletsFired) {
 				for (var i=0; i<bulletArray.length; i++) {
 					if (stage.contains(bulletArray[i])) {
 						bulletArray[i].moveHandler();
 						if(!bulletArray[i].fixedTarget){
-						bulletArray[i].targetX=balloon[0].x;//right now always chases first balloon
-						bulletArray[i].targetY=balloon[0].y;
+							bulletArray[i].targetX=balloon[0].x;//right now always chases first balloon
+							bulletArray[i].targetY=balloon[0].y;
 						}
 					}
 				}
@@ -678,7 +677,7 @@ package {
 							objectArray[i].iAmDead=true;
 						}
 						if (objectArray[i].iAmDead) {
-							//xmlStuff.scoreNum += objectArray[i].pointVal;
+							xmlStuff.scoreNum += objectArray[i].pointVal;
 							stage.removeChild(objectArray[i]);
 							objectArray.splice(i,1);
 							objectCounter--;
@@ -687,16 +686,16 @@ package {
 				}
 			}
 		}
-
+		
 		public function bulletsDie(theTarget) {
 			if (bulletsFired) {
 				for (var i=0; i<bulletArray.length; i++) {
 					if (stage.contains(bulletArray[i])) {
 						if (! theTarget.deadBalloon&&hitDetect(theTarget.x,theTarget.y,theTarget.width-100,theTarget.height-100,bulletArray[i].x,bulletArray[i].y,bulletArray[i].width,bulletArray[i].height)) {
-								theTarget.hitBalloon=true;
-								bulletArray[i].lifeCounter=9999;
-								doBoom(bulletArray[i].x,bulletArray[i].y);
-
+							theTarget.hitBalloon=true;
+							bulletArray[i].lifeCounter=9999;
+							doBoom(bulletArray[i].x,bulletArray[i].y);
+							
 						}
 						if (bulletArray[i].x<-100||bulletArray[i].y<-100||bulletArray[i].x>stage.stageWidth+100||bulletArray[i].y>stage.stageHeight+100) {
 							bulletArray[i].iAmDead=true;
@@ -716,9 +715,9 @@ package {
 				}
 			}
 		}
-	//--
+		//--
 		public function doPoof(xx,yy) {
-
+			
 			var poof = new Poof();
 			stage.addChild(poof);
 			poof.x=xx;
@@ -726,13 +725,13 @@ package {
 		}
 		
 		public function doBoom(xx,yy) {
-
+			
 			var poof = new Poof();
 			stage.addChild(poof);
 			poof.x=xx;
 			poof.y=yy;
 		}
-
+		
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~     debug stuff    ~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 		public function debugDraw() {
 			if (debug) {
@@ -740,9 +739,9 @@ package {
 				drawCursor();
 			}
 		}
-
+		
 		//---
-
+		
 		public function drawHitBox() {
 			this.graphics.clear();
 			this.graphics.lineStyle(1, 0xff0000);
@@ -755,15 +754,15 @@ package {
 			//;
 			this.graphics.lineTo(balloon.x-(balloon.width/2),balloon.y-(balloon.height/2));
 		}
-
+		
 		//---;
-
+		
 		public function drawCursor() {
 			cursor.visible=true;
 			cursor.x=mouseX;
 			cursor.y=mouseY;
 		}
-
+		
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~     behind-the-scenes stuff    ~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 		//2D Hit Detect.  Assumes center.  x,y,w,h of object 1, x,y,w,h, of object 2.
 		public function hitDetect(x1, y1, w1, h1, x2, y2, w2, h2) {
@@ -779,7 +778,7 @@ package {
 		}
 		//---   END class Game   ---
 		public function startUp(evt:Event):void {
-
+			
 			blackgC.x=blackgC.x-mover;
 			if (blackg.x+myBreadth+blackgC.x<0) {
 				blackg.x=blackg.x+(2*myBreadth);
@@ -787,9 +786,9 @@ package {
 			if (blackg2.x+myBreadth+blackgC.x<0) {
 				blackg2.x=blackg2.x+(2*myBreadth);
 			}
-
-
-
+			
+			
+			
 			whitegC.x=whitegC.x-mover/2;
 			if (whiteg.x+myBreadth+whitegC.x<0) {
 				whiteg.x=whiteg.x+(2*myBreadth);
@@ -797,11 +796,11 @@ package {
 			if (whiteg2.x+myBreadth+whitegC.x<0) {
 				whiteg2.x=whiteg2.x+(2*myBreadth);
 			}
-
-
-
-
-
+			
+			
+			
+			
+			
 			colorbgC.x=colorbgC.x-mover-2;
 			if (colorbg.x+myBreadth+colorbgC.x<0) {
 				colorbg.x=colorbg.x+(2*myBreadth);
@@ -809,12 +808,12 @@ package {
 			if (colorbg2.x+myBreadth+colorbgC.x<0) {
 				colorbg2.x=colorbg2.x+(2*myBreadth);
 			}
-
-
-
-
+			
+			
+			
+			
 			triC.x=triC.x-3;
-
+			
 			if (tri.x+myBreadth+triC.x<0) {
 				tri.x=tri.x+(2*myBreadth);
 			}
@@ -822,19 +821,19 @@ package {
 				tri2.x=tri2.x+(2*myBreadth);
 			}
 		}
-
-
+		
+		
 		function onOmekGetMaxPlayers(numPlayers:String):void {
 			/*debugString_txt.text ="maz" + numPlayers;
 			stage.addChild(debugString_txt); 
 			debugString_txt.x = 500; */
-
+			
 		}
-
-
+		
+		
 	}
-
-
-
+	
+	
+	
 	//---   END package   ---
 }
