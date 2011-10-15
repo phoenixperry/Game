@@ -37,7 +37,7 @@
 		public var objectArray,newObject,objectsDropped,objectCounter;
 		public var levelMin,levelNow,levelMax;
 		public var masterCounter,secondsMultiplier,fps;
-		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller;
+		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller,oddsOfWerner;
 		public var jointArray,headFollower;
 
 		/***** MOUSE AND JOINTS  
@@ -434,26 +434,31 @@
 				oddsOfKitty=0.9;
 				oddsOfWeasel=0.5;
 				oddsOfFaller=0.4;
+				oddsOfWerner=0.3;
 			} else if (levelNow==2) {
 				oddsOfFall=0.9915;
 				oddsOfKitty=0.991;
 				oddsOfWeasel=0.8;
-				oddsOfFaller=0.6;				
+				oddsOfFaller=0.6;
+				oddsOfWerner=0.4;
 			} else if (levelNow==3) {
 				oddsOfFall=0.991;
 				oddsOfKitty=0.3;
 				oddsOfWeasel=1.0;
-				oddsOfFaller=0.5;				
+				oddsOfFaller=1.0;	
+				oddsOfWerner=0.4;
 			} else if (levelNow==4) {
 				oddsOfFall=0.99;
 				oddsOfKitty=0.7;
 				oddsOfWeasel=0.3;
-				oddsOfFaller=0.5;				
+				oddsOfFaller=0.5;	
+				oddsOfWerner=0.4;
 			} else if (levelNow==5) {
 				oddsOfFall=1.0;
 				oddsOfKitty=0.6;
 				oddsOfWeasel=1.0;
-				oddsOfFaller=0.5;				
+				oddsOfFaller=0.5;
+				oddsOfWerner=0.4;
 			}
 		}
 
@@ -541,7 +546,11 @@
 			if (rnd < oddsOfKitty) {
 				if (rnd < oddsOfWeasel) {
 					if(rnd < oddsOfFaller){
+						if(rnd < oddsOfWerner){
+							newObject = new Werner();
+						}else{
 						newObject = new Faller();
+					}
 					}else{
 						newObject = new Weasel();
 					}
@@ -561,8 +570,10 @@
 				for (var i=0; i<objectArray.length; i++) {
 					if (stage.contains(objectArray[i])) {
 						objectArray[i].moveHandler();
+						if(!objectArray[i].fixedTarget){
 						objectArray[i].targetX=balloon[0].x;//right now always chases first balloon
 						objectArray[i].targetY=balloon[0].y;
+						}
 					}
 				}
 			}
