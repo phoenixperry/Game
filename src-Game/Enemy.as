@@ -10,7 +10,7 @@ import flash.ui.*;
 
 	public class Enemy extends MovieClip{
 
-		public var speed,xDelta,bounceSwitch,bounceCounter,bounceCounterMin,bounceCounterMax,chaser,chaseFriction,targetX,targetY,lifeSpan;
+		public var speed,xDelta,bounceSwitch,bounceCounter,bounceCounterMin,bounceCounterMax,zoomer,zoomerDelay,chaser,chaseFriction,targetX,targetY,lifeSpan;
 		//public var ground = stage.stageHeight - 100;
 		//how do we get this to inherit from Main?
 		public var ground = 668;
@@ -24,6 +24,8 @@ import flash.ui.*;
 			super(); 
 			iAmDead = false;
 			speed = 4;
+			zoomer = false;
+			zoomerDelay = 300;
 			chaser = false;
 			chaseFriction = 100;
 			lifeCounter = 0;
@@ -51,6 +53,9 @@ import flash.ui.*;
 		}
 
 		public function moveHandler() {
+		if(zoomer&&lifeCounter>zoomerDelay){
+		speed = 10;
+		}
 			this.y = this.y + speed;
 			if (this.y > ground) {
 				speed *=  -1;

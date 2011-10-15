@@ -26,8 +26,7 @@
 		public var constraintXIncrement = 20;
 		public var constraintXNow = constraintXAdult;
 		public var debugString_txt:TextField, scoreString_txt:TextField;
-		public var scoreNum = 0;
-		public var scoreNumHi;
+		public var xmlStuff;
 		public var introScreen, introCounterMax;
 		public var levelMusic1, levelMusic2, levelMusic3, levelMusic4;
 		public var levelMusicChannel:SoundChannel;
@@ -38,7 +37,7 @@
 		public var objectArray,newObject,objectsDropped,objectCounter;
 		public var levelMin,levelNow,levelMax;
 		public var masterCounter,secondsMultiplier,fps;
-		public var oddsOfFall,oddsOfKitty,oddsOfWeasel;
+		public var oddsOfFall,oddsOfKitty,oddsOfWeasel,oddsOfFaller;
 		public var jointArray,headFollower;
 
 		/***** MOUSE AND JOINTS  
@@ -78,6 +77,7 @@
 		public function Game() {
 			super();
 			Mouse.hide();
+			xmlStuff = new XmlStuff();
 			levelMusic1=new Level1();
 			levelMusic2=new Level2();
 			levelMusic3=new Level3();
@@ -225,7 +225,6 @@
 		}
 		
 		public function setup() {
-			
 			textSetup();
 			
 			introScreen=true;
@@ -327,7 +326,7 @@
 		//---   DRAW   ---
 
 		public function doStuff(evt:Event) {
-			scoreString_txt.text=scoreNum; 
+			scoreString_txt.text=xmlStuff.scoreNum; 
 
 			debugDraw();
 			if(introScreen) {
@@ -434,22 +433,27 @@
 				oddsOfFall=0.992;
 				oddsOfKitty=0.9;
 				oddsOfWeasel=0.5;
+				oddsOfFaller=0.4;
 			} else if (levelNow==2) {
 				oddsOfFall=0.9915;
 				oddsOfKitty=0.991;
 				oddsOfWeasel=0.8;
+				oddsOfFaller=0.6;				
 			} else if (levelNow==3) {
 				oddsOfFall=0.991;
 				oddsOfKitty=0.3;
 				oddsOfWeasel=1.0;
+				oddsOfFaller=0.5;				
 			} else if (levelNow==4) {
 				oddsOfFall=0.99;
 				oddsOfKitty=0.7;
 				oddsOfWeasel=0.3;
+				oddsOfFaller=0.5;				
 			} else if (levelNow==5) {
 				oddsOfFall=1.0;
 				oddsOfKitty=0.6;
 				oddsOfWeasel=1.0;
+				oddsOfFaller=0.5;				
 			}
 		}
 
@@ -536,7 +540,11 @@
 			var rnd=Math.random();
 			if (rnd < oddsOfKitty) {
 				if (rnd < oddsOfWeasel) {
-					newObject = new Weasel();
+					if(rnd < oddsOfFaller){
+						newObject = new Faller();
+					}else{
+						newObject = new Weasel();
+					}
 				} else {
 					newObject = new Kitty();
 				}
@@ -582,7 +590,7 @@
 							objectArray[i].iAmDead=true;
 						}
 						if (objectArray[i].iAmDead) {
-							scoreNum += objectArray[i].pointVal;
+							xmlStuff.scoreNum += objectArray[i].pointVal;
 							stage.removeChild(objectArray[i]);
 							objectArray.splice(i,1);
 							objectCounter--;
