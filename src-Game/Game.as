@@ -1,4 +1,4 @@
-﻿package {
+package {
 
 	import fl.transitions.Tween;
 	import fl.transitions.easing.*;
@@ -455,7 +455,7 @@
 				oddsOfKitty=0.9;
 				oddsOfWeasel=0.5;
 				oddsOfFaller=0.4;
-				oddsOfWerner=0.3;
+				oddsOfWerner=1.0;
 				oddsOfElite=0.3;
 			} else if (levelNow==2) {
 				oddsOfFall=0.9915;
