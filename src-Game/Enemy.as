@@ -37,7 +37,7 @@ import flash.ui.*;
 			lifeSpan = 60 * 20;
 			bounceFailSafeCount = 0;
 			this.x = Math.random() * 1024;
-			this.y = startPoint;
+			this.y = startPoint-250;
 			xDelta = (Math.random() * 10) - 5;
 			bounceSwitch = false;
 			bounceCounter = 0;

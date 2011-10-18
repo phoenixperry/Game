@@ -9,7 +9,7 @@
 	import flash.ui.*;
 	import flash.media.*;
 	import flash.xml.*;
-	import flash.filesystem.*;
+	//import flash.filesystem.*;
 	
 	public class XmlStuff {		
 		//---   GLOBALS   ---
@@ -61,11 +61,11 @@
 		
 		public function xmlSaveToDisk() {
 			var saveStr=nmkSaveData.toXMLString();
-			var file = new File(writeFilePath + writeFileName);
-			var fs = new FileStream();
-			fs.open(file, FileMode.WRITE);
-			fs.writeUTFBytes(saveStr);
-			fs.close();
+			//var file = new File(writeFilePath + writeFileName);
+			//var fs = new FileStream();
+			//fs.open(file, FileMode.WRITE);
+			//fs.writeUTFBytes(saveStr);
+			//fs.close();
 			//stop();
 		}
 				

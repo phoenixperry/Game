@@ -1,4 +1,4 @@
-package {
+﻿package {
 	
 	import fl.transitions.Tween;
 	import fl.transitions.easing.*;
@@ -12,13 +12,14 @@ package {
 	import flash.media.*;
 	import XmlStuff;
 	import com.actionsnippet.*; 
+	import flash.errors.IOError; 
 
 	
 	
 	import com.hurlant.*;
 	
 	import com.omek.*;
-	
+
 	public class Game extends MovieClip {
 		[SWF(width = 1024, height = 480, frameRate = 30)]  
 		//---   BEGIN class Game  ---
@@ -81,6 +82,7 @@ package {
 		public var mover:Number;
 		
 		public function Game() {
+			loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, handleGlobalErrors);
 			super();
 			Mouse.hide();
 			xmlStuff = new XmlStuff();
@@ -167,6 +169,7 @@ package {
 			mover=1;
 			addEventListener(Event.ENTER_FRAME, startUp);
 			
+			///edit this var with number of players from beckon
 			numBalloons=1;
 			balloon=[];
 			for (var j=0; j<numBalloons; j++) {
@@ -579,6 +582,8 @@ package {
 						if(rnd < oddsOfWerner){
 							if(rnd < oddsOfElite){
 								newObject = new Faller();
+							
+								
 							}else{
 								newObject = new Werner();
 							}
@@ -834,6 +839,13 @@ package {
 			
 		}
 		
+		
+		//bye bye ugly error box. 
+		function handleGlobalErrors( evt : UncaughtErrorEvent ):void
+		{
+			evt.preventDefault();
+			trace(evt); 
+		}
 		
 	}
 	
