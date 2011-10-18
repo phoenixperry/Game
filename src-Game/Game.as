@@ -11,12 +11,16 @@ package {
 	import flash.ui.*;
 	import flash.media.*;
 	import XmlStuff;
+	import com.actionsnippet.*; 
+
+	
 	
 	import com.hurlant.*;
 	
 	import com.omek.*;
 	
 	public class Game extends MovieClip {
+		[SWF(width = 1024, height = 480, frameRate = 30)]  
 		//---   BEGIN class Game  ---
 		// learning git is so much fun. know this  - that should be ESC, then :wq!! OLD SCHOOL..
 		//I love the context-sensitive menu.
@@ -454,7 +458,7 @@ package {
 				oddsOfFall=0.992;
 				oddsOfKitty=0.9;
 				oddsOfWeasel=0.5;
-				oddsOfFaller=0.4;
+				oddsOfFaller=1.0;
 				oddsOfWerner=1.0;
 				oddsOfElite=0.3;
 			} else if (levelNow==2) {
@@ -574,7 +578,7 @@ package {
 					if(rnd < oddsOfFaller){
 						if(rnd < oddsOfWerner){
 							if(rnd < oddsOfElite){
-								newObject = new Elite();
+								newObject = new Faller();
 							}else{
 								newObject = new Werner();
 							}

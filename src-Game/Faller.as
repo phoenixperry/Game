@@ -28,11 +28,11 @@
 				if (this.y < previousY) {
 					previousCounter = 0;
 					previousSwitch = true;
-					this.tail.gotoAndPlay("down");
+					//this.tail.gotoAndPlay("down");
 				} else if (this.y>previousY) {
 					previousSwitch = true;
 					previousCounter = 0;
-					this.tail.gotoAndPlay("up");
+					//this.tail.gotoAndPlay("up");
 				}
 			} else if (previousSwitch) {
 				if (previousCounter<previousCounterMax) {
